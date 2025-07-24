@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initApp() {
 
   // --- Lenis & Smooth Scroll ---
   const lenis = new Lenis({
@@ -474,4 +474,19 @@ textAnimWrappers.forEach(wrapper => {
     });
   });
 
-});
+}
+
+// Эта функция будет ждать, пока все нужные библиотеки загрузятся
+function waitForLibraries() {
+  // Проверяем, существуют ли jQuery ($) и sbjs
+  if (typeof $ !== 'undefined' && typeof sbjs !== 'undefined') {
+    // Если да, запускаем наш основной код
+    initApp();
+  } else {
+    // Если нет, ждем 50 миллисекунд и проверяем снова
+    setTimeout(waitForLibraries, 50);
+  }
+}
+
+// Запускаем ожидание
+waitForLibraries();
