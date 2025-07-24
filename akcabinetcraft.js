@@ -321,6 +321,17 @@ textAnimWrappers.forEach(wrapper => {
     });
   }
 });
+
+    // --- UTM Tracking ---
+  // Инициализируем библиотеку sbjs
+  sbjs.init();
+
+  // Проверяем, был ли найден источник (utm_source)
+  if (sbjs.get.current.src) {
+    const utmSourceValue = sbjs.get.current.src;
+    // Находим все скрытые поля с именем 'utmSource' и устанавливаем им значение
+    $('input[name="utmSource"]').val(utmSourceValue);
+  }
   
   // --- Form & Validation Logic ---
   // 1. Telegram Submission
