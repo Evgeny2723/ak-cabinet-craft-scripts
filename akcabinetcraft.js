@@ -335,26 +335,18 @@ textAnimWrappers.forEach(wrapper => {
   
   // --- Form & Validation Logic ---
   // 1. Telegram Submission
-  function sendToTelegram(message, form) {
-    const token = '7856355983:AAFUBFkzMjjepXR7FAn5vEIiLhSf3kL3ZzU';
-    const chatId = '-4926695493';
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const params = { chat_id: chatId, text: message, parse_mode: 'HTML' };
+  function sendToTelegram(message) {
+  const token = '7856355983:AAFUBFkzMjjepXR7FAn5vEIiLhSf3kL3ZzU';
+  const chatId = '-4926695493';
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const params = { chat_id: chatId, text: message, parse_mode: 'HTML' };
 
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) })
-      .then(response => response.json())
-      .then(data => {
-        if (data.ok) {
-          const $form = $(form);
-          $form.hide();
-          $form.closest('.w-form').find('.w-form-done').show();
-        } else {
-          alert('An error occurred while submitting. Please try again.');
-        }
-      }).catch(error => {
-        alert('An error occurred while submitting. Please try again.');
-      });
-  }
+  fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) })
+    .catch(error => {
+      console.error('Telegram submission error:', error);
+      // Можно добавить уведомление для пользователя, если нужно
+    });
+}
 
   function telegramSubmitHandler(form) {
     const formData = new FormData(form);
@@ -380,7 +372,6 @@ textAnimWrappers.forEach(wrapper => {
     errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
     highlight: function(element) { $(element).css("border-bottom", "1px solid var(--error)"); },
     unhighlight: function(element) { $(element).css("border-bottom", "1px solid var(--white)"); },
-    submitHandler: telegramSubmitHandler
   });
   $("#corp-cta-form").validate({
     rules: { firstname: { required: true }, lastname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true }, 'project-type': { required: true } },
@@ -388,8 +379,23 @@ textAnimWrappers.forEach(wrapper => {
     errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
     highlight: function(element) { $(element).css("background-color", "rgba(200, 15, 15, 0.06)").addClass("error-placeholder"); },
     unhighlight: function(element) { $(element).css("background-color", "").removeClass("error-placeholder"); },
-    submitHandler: telegramSubmitHandler
   });
+
+  // НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ
+$('#cta-form, #corp-cta-form').on('submit', function(e) {
+  // Проверяем, прошла ли форма валидацию
+  if ($(this).valid()) {
+    const form = this;
+    const formData = new FormData(form);
+    let message = `<b>Новая заявка с формы "${form.dataset.name || form.id}"</b>\n\n`;
+    for (const [key, value] of formData.entries()) {
+      if (value) { message += `<b>${key}:</b> ${value}\n`; }
+    }
+    // Отправляем в Telegram, но не мешаем стандартной отправке
+    sendToTelegram(message);
+  }
+  // Мы не используем e.preventDefault(), чтобы Webflow мог отправить форму дальше
+});
 
   // 4. Phone Input Mask
   const phoneInputs = document.querySelectorAll('input[name="phone"]');
