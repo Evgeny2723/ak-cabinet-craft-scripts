@@ -333,29 +333,42 @@ textAnimWrappers.forEach(wrapper => {
     $('input[name="utmSource"]').val(utmSourceValue);
   }
   
-  // --- Form & Validation Logic ---
-  // 1. Telegram Submission
-  function sendToTelegram(message) {
+// --- Form & Validation Logic (REVISED FOR MAXIMUM RELIABILITY) ---
+
+// 1. Базовая функция отправки. Теперь она возвращает Promise, чтобы
+// сообщить об успехе или неудаче.
+function sendToTelegram(message) {
   const token = '7856355983:AAFUBFkzMjjepXR7FAn5vEIiLhSf3kL3ZzU';
   const chatId = '-4926695493';
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
   const params = { chat_id: chatId, text: message, parse_mode: 'HTML' };
 
-  fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) })
-    .catch(error => {
-      console.error('Telegram submission error:', error);
-      // Можно добавить уведомление для пользователя, если нужно
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) })
+    .then(response => {
+      if (!response.ok) {
+        // Если ответ от Telegram не успешный, "пробрасываем" ошибку
+        throw new Error(`Telegram API Error: ${response.status}`);
+      }
+      return response.json();
     });
 }
 
-  function telegramSubmitHandler(form) {
-    const formData = new FormData(form);
-    let message = `<b>Новая заявка с формы "${form.dataset.name || form.id}"</b>\n\n`;
-    for (const [key, value] of formData.entries()) {
-      if (value) { message += `<b>${key}:</b> ${value}\n`; }
-    }
-    sendToTelegram(message, form);
-  }
+// 2. НОВАЯ "умная" функция с логикой повторных попыток
+function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
+  sendToTelegram(message)
+    .then(() => console.log('Telegram submission successful.')) // Успех, ничего больше не делаем
+    .catch(error => {
+      console.error(`Attempt failed. Retries left: ${retries - 1}. Error:`, error);
+      if (retries > 1) {
+        // Если попытки еще есть, ждем 1.5 секунды и пробуем снова
+        setTimeout(() => {
+          sendToTelegramWithRetries(message, retries - 1, delay);
+        }, delay);
+      } else {
+        console.error('Telegram submission failed after all retries.');
+      }
+    });
+}
 
   // 2. Validation Rules
   $.validator.addMethod("phoneUS_complete", function(value, element) {
@@ -392,7 +405,7 @@ $('#cta-form, #corp-cta-form').on('submit', function(e) {
       if (value) { message += `<b>${key}:</b> ${value}\n`; }
     }
     // Отправляем в Telegram, но не мешаем стандартной отправке
-    sendToTelegram(message);
+    sendToTelegramWithRetries(message);
   }
   // Мы не используем e.preventDefault(), чтобы Webflow мог отправить форму дальше
 });
