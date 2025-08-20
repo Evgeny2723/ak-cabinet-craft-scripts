@@ -397,8 +397,8 @@ function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
     rules: { firstname: { required: true }, lastname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true }, 'project-type': { required: true } },
     messages: { email: { email: "Invalid email" }, 'project-type': { required: "Please select a project type from the list to proceed." } },
     errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("background-color", "rgba(200, 15, 15, 0.06)").addClass("error-placeholder"); },
-    unhighlight: function(element) { $(element).css("background-color", "").removeClass("error-placeholder"); },
+    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
+    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
   });
 
   // НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ
