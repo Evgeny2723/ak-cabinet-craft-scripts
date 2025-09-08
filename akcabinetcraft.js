@@ -177,7 +177,7 @@ function initApp() {
 
   // 1. Navbar Inversion Logic
   if (nav || navCorp) {
-    const invertedNavPages = ['/portfolio', '/contact', '/blog', '/privacy-policy', '/posts'];
+    const invertedNavPages = ['/portfolio', '/contact', '/blog', '/privacy-policy', '/posts', '/thank-you'];
     const currentPath = window.location.pathname;
     const triggerSelectors = ['.section-hero', '.project-temaplate-hero', '.hero-cms-template'];
     const needsInversion = invertedNavPages.some(pagePrefix => currentPath.startsWith(pagePrefix));
@@ -379,7 +379,7 @@ function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
   }, "Please enter the correct email address.");
 
   // 3. Form Validation Initialization
-  $("#cta-form").validate({
+  $("#cta-form, #lp-target-form").validate({
     rules: { fullname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email: true } },
     messages: { email: { email: "Invalid email" } },
     errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
@@ -443,21 +443,33 @@ $('#cta-form, #corp-cta-form, #new-cta-form').on('submit', function(e) {
         }, 400);
       });
     }
-    $('#cta-form, #corp-cta-form, #new-cta-form').each(function() {
+    $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form').each(function() {
       const formElement = $(this);
       const formBlock = formElement.closest('.w-form');
       const nativeSuccessMessage = formBlock.find('.w-form-done');
-      if (nativeSuccessMessage.length > 0 && customSuccessBlock.length > 0) {
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
-              customSuccessBlock.css('display', 'flex');
-              setTimeout(function() { if (successWindow.length > 0) { successWindow.addClass('is-visible'); } }, 50);
-              observer.disconnect();
+      
+      if (nativeSuccessMessage.length > 0) {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
+            const submittedFormId = formElement.attr('id');
+            
+            // --- ВОТ КЛЮЧЕВАЯ ЛОГИКА ---
+            if (submittedFormId === 'lp-target-form') {
+              // Если это целевая форма, перенаправляем
+              window.location.href = '/thank-you';
+            } else {
+              // Для всех остальных показываем кастомное окно
+              if (customSuccessBlock.length > 0) {
+                  customSuccessBlock.css('display', 'flex');
+                  setTimeout(function() { if (successWindow.length > 0) { successWindow.addClass('is-visible'); } }, 50);
+              }
             }
-          });
+            observer.disconnect();
+          }
         });
-        observer.observe(nativeSuccessMessage[0], { attributes: true });
+      });
+      observer.observe(nativeSuccessMessage[0], { attributes: true });
       }
     });
   }
