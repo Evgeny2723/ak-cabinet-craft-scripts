@@ -402,7 +402,7 @@ function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
   });
 
   // НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ
-$('#cta-form, #corp-cta-form, #new-cta-form').on('submit', function(e) {
+$('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form').on('submit', function(e) {
   // Проверяем, прошла ли форма валидацию
   if ($(this).valid()) {
     const form = this;
