@@ -400,9 +400,16 @@ function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
     highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
     unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
   });
+  $("#direct-form, #price-form").validate({
+    rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true } },
+    messages: { email: { email: "Invalid email" } },
+    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
+    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
+  });
 
   // НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ
-$('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form').on('submit', function(e) {
+$('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #price-form').on('submit', function(e) {
   // Проверяем, прошла ли форма валидацию
   if ($(this).valid()) {
     const form = this;
@@ -454,16 +461,24 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form').on('submit', func
           if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
             const submittedFormId = formElement.attr('id');
             
-            // --- ВОТ КЛЮЧЕВАЯ ЛОГИКА ---
-            if (submittedFormId === 'lp-target-form') {
-              // Если это целевая форма, перенаправляем
-              window.location.href = '/thank-you';
-            } else {
-              // Для всех остальных показываем кастомное окно
-              if (customSuccessBlock.length > 0) {
+            // --- РАСШИРЕННАЯ ЛОГИКА ПЕРЕНАПРАВЛЕНИЯ ---
+            switch (submittedFormId) {
+              case 'lp-target-form':
+                window.location.href = '/thank-you';
+                break;
+              case 'direct-form':
+                window.location.href = '/thanks-page-shaker-phone';
+                break;
+              case 'price-form':
+                window.location.href = '/thanks-page-shaker-ff';
+                break;
+              default:
+                // Для всех остальных форм показываем кастомное окно
+                if (customSuccessBlock.length > 0) {
                   customSuccessBlock.css('display', 'flex');
                   setTimeout(function() { if (successWindow.length > 0) { successWindow.addClass('is-visible'); } }, 50);
-              }
+                }
+                break;
             }
             observer.disconnect();
           }
