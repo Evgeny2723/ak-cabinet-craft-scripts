@@ -400,9 +400,16 @@ function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
     highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
     unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
   });
-  $("#direct-form, #price-form").validate({
+  $("#direct-form").validate({
     rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true } },
     messages: { email: { email: "Invalid email" } },
+    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
+    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
+  });
+  $("#price-form").validate({
+    rules: { 'p-name': { required: true }, 'p-phone': { required: true, phoneUS_complete: true }, 'p-email': { required: true, email_strict: true } },
+    messages: { 'p-email': { email: "Invalid email" } },
     errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
     highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
     unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
@@ -425,7 +432,7 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #pri
 });
 
   // 4. Phone Input Mask
-  const phoneInputs = document.querySelectorAll('input[name="phone"]');
+  const phoneInputs = document.querySelectorAll('input[name="phone"], input[name="p-phone"]');
   if (phoneInputs.length > 0) {
     const phoneMaskOptions = { mask: '+1 ({N}00) 000-0000', lazy: false, blocks: { N: { mask: IMask.MaskedRange, from: 2, to: 9 }, '0': { mask: IMask.MaskedRange, from: 0, to: 9 } } };
     phoneInputs.forEach(function(inputElement) { inputElement.imask = IMask(inputElement, phoneMaskOptions); });
