@@ -321,17 +321,6 @@ textAnimWrappers.forEach(wrapper => {
     });
   }
 });
-
-    // --- UTM Tracking ---
-  // Инициализируем библиотеку sbjs
-  sbjs.init();
-
-  // Проверяем, был ли найден источник (utm_source)
-  if (sbjs.get.current.src) {
-    const utmSourceValue = sbjs.get.current.src;
-    // Находим все скрытые поля с именем 'utmSource' и устанавливаем им значение
-    $('input[name="utmSource"]').val(utmSourceValue);
-  }
   
 // --- Form & Validation Logic (REVISED FOR MAXIMUM RELIABILITY) ---
 
@@ -536,12 +525,10 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #pri
 
 }
 
-// Эта функция теперь ждет только jQuery
+// Эта функция ждет только jQuery
 function waitForJquery() {
-  console.log("Проверяю готовность jQuery...");
   if (typeof $ !== 'undefined') {
-    console.log("УСПЕХ: jQuery загружен. Запускаю initApp().");
-    initApp();
+    initApp(); // Запускаем основной функционал
   } else {
     setTimeout(waitForJquery, 50);
   }
@@ -551,22 +538,27 @@ function waitForJquery() {
 waitForJquery();
 
 
-// --- UTM Tracking (теперь это отдельный, независимый блок) ---
-// Мы ждём полной загрузки страницы, включая все скрипты
-window.addEventListener('load', function() {
-  try {
-    // Пытаемся запустить sbjs
-    if (typeof sbjs !== 'undefined') {
+// --- UTM Tracking (Независимый и безопасный блок) ---
+// Эта функция будет ждать загрузки sbjs отдельно
+function waitForSbjs() {
+  // Проверяем, существует ли sbjs
+  if (typeof sbjs !== 'undefined') {
+    // Если да, запускаем логику для UTM
+    try {
       console.log("Sourcebuster (sbjs) загружен. Инициализирую.");
       sbjs.init();
       if (sbjs.get.current.src) {
         const utmSourceValue = sbjs.get.current.src;
         $('input[name="utmSource"]').val(utmSourceValue);
       }
-    } else {
-      console.log("Sourcebuster (sbjs) не был загружен (возможно, заблокирован).");
+    } catch (e) {
+      console.error("Ошибка при инициализации sbjs:", e);
     }
-  } catch (e) {
-    console.error("Ошибка при инициализации sbjs:", e);
+  } else {
+    // Если нет, ждем 50 миллисекунд и проверяем снова
+    setTimeout(waitForSbjs, 50);
   }
-});
+}
+
+// Запускаем ожидание sbjs
+waitForSbjs();
