@@ -338,7 +338,7 @@ textAnimWrappers.forEach(wrapper => {
 // 1. Базовая функция отправки. Теперь она возвращает Promise, чтобы
 // сообщить об успехе или неудаче.
 function sendToTelegram(message) {
-  const token = '7856355983:AAFUBFkzMjjepXR7FAn5vEIiLhSf3kL3ZzU';
+  const token = '7856355983:AAHZL9nsJgZHwzyiBgFXdyTne07srjOzKbA';
   const chatId = '-4926695493';
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
   const params = { chat_id: chatId, text: message, parse_mode: 'HTML' };
