@@ -536,17 +536,37 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #pri
 
 }
 
-// Эта функция будет ждать, пока все нужные библиотеки загрузятся
-function waitForLibraries() {
-  // Проверяем, существуют ли jQuery ($) и sbjs
-  if (typeof $ !== 'undefined' && typeof sbjs !== 'undefined') {
-    // Если да, запускаем наш основной код
+// Эта функция теперь ждет только jQuery
+function waitForJquery() {
+  console.log("Проверяю готовность jQuery...");
+  if (typeof $ !== 'undefined') {
+    console.log("УСПЕХ: jQuery загружен. Запускаю initApp().");
     initApp();
   } else {
-    // Если нет, ждем 50 миллисекунд и проверяем снова
-    setTimeout(waitForLibraries, 50);
+    setTimeout(waitForJquery, 50);
   }
 }
 
-// Запускаем ожидание
-waitForLibraries();
+// Запускаем ожидание jQuery
+waitForJquery();
+
+
+// --- UTM Tracking (теперь это отдельный, независимый блок) ---
+// Мы ждём полной загрузки страницы, включая все скрипты
+window.addEventListener('load', function() {
+  try {
+    // Пытаемся запустить sbjs
+    if (typeof sbjs !== 'undefined') {
+      console.log("Sourcebuster (sbjs) загружен. Инициализирую.");
+      sbjs.init();
+      if (sbjs.get.current.src) {
+        const utmSourceValue = sbjs.get.current.src;
+        $('input[name="utmSource"]').val(utmSourceValue);
+      }
+    } else {
+      console.log("Sourcebuster (sbjs) не был загружен (возможно, заблокирован).");
+    }
+  } catch (e) {
+    console.error("Ошибка при инициализации sbjs:", e);
+  }
+});
