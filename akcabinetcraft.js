@@ -179,7 +179,7 @@ function initApp() {
   if (nav || navCorp) {
     const invertedNavPages = ['/portfolio', '/contact', '/blog', '/privacy-policy', '/posts', '/thank-you'];
     const currentPath = window.location.pathname;
-    const triggerSelectors = ['.section-hero', '.project-temaplate-hero', '.hero-cms-template'];
+    const triggerSelectors = ['.section-hero', '.project-temaplate-hero', '.hero-cms-template', '.shaker-hero'];
     const needsInversion = invertedNavPages.some(pagePrefix => currentPath.startsWith(pagePrefix));
 
     if (needsInversion) {
