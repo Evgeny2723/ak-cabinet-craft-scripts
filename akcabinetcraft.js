@@ -536,15 +536,26 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #pri
 
 }
 
-// Эта функция будет ждать, пока все нужные библиотеки загрузятся
+// Эта функция будет ждать, пока все нужные библиотеки загрузятся (ВЕРСИЯ ДЛЯ ОТЛАДКИ)
 function waitForLibraries() {
+  // Выводим сообщение в консоль при каждой проверке
+  console.log("Проверяю готовность библиотек...");
+
   // Проверяем, существуют ли jQuery ($) и sbjs
   if (typeof $ !== 'undefined' && typeof sbjs !== 'undefined') {
-    // Если да, запускаем наш основной код
+    // Если всё готово, выводим сообщение об успехе и запускаем основной код
+    console.log("УСПЕХ: Все библиотеки загружены. Запускаю initApp().");
     initApp();
   } else {
-    // Если нет, ждем 50 миллисекунд и проверяем снова
-    setTimeout(waitForLibraries, 50);
+    // Если чего-то не хватает, сообщаем, чего именно
+    if (typeof $ === 'undefined') {
+      console.log("СТАТУС: jQuery ($) еще не определен.");
+    }
+    if (typeof sbjs === 'undefined') {
+      console.log("СТАТУС: Sourcebuster (sbjs) еще не определен.");
+    }
+    // Если нет, ждем 100 миллисекунд и проверяем снова
+    setTimeout(waitForLibraries, 100);
   }
 }
 
