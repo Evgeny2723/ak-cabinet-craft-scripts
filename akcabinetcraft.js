@@ -1,24 +1,6 @@
 function initApp() {
 
-  <!-- // --- Lenis & Smooth Scroll ---
-  const lenis = new Lenis({
-    autoRaf: true,
-  });
 
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-
-  $("[data-lenis-toggle]").on("click", function() {
-    $(this).toggleClass("stop-scroll");
-    if ($(this).hasClass("stop-scroll")) {
-      lenis.stop();
-    } else {
-      lenis.start();
-    }
-  }); -->
 
 
   // --- Swiper Sliders ---
