@@ -1,6 +1,6 @@
 function initApp() {
 
-  // --- Lenis & Smooth Scroll ---
+  <!-- // --- Lenis & Smooth Scroll ---
   const lenis = new Lenis({
     autoRaf: true,
   });
@@ -18,7 +18,7 @@ function initApp() {
     } else {
       lenis.start();
     }
-  });
+  }); -->
 
 
   // --- Swiper Sliders ---
