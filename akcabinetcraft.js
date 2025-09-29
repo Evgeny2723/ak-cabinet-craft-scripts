@@ -304,142 +304,90 @@ textAnimWrappers.forEach(wrapper => {
   }
 });
   
-// --- Form & Validation Logic (REVISED FOR MAXIMUM RELIABILITY) ---
+// --- Form & Validation Logic (Zapier/Make Ready) ---
 
-// 1. Базовая функция отправки. Теперь она возвращает Promise, чтобы
-// сообщить об успехе или неудаче.
-function sendToTelegram(message) {
-  const token = '7856355983:AAHZL9nsJgZHwzyiBgFXdyTne07srjOzKbA';
-  const chatId = '-4926695493';
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  const params = { chat_id: chatId, text: message, parse_mode: 'HTML' };
+// 1. Validation Rules
+$.validator.addMethod("phoneUS_complete", function(value, element) {
+  return this.optional(element) || (element.imask && element.imask.masked.isComplete);
+}, "Please enter a complete phone number.");
+$.validator.addMethod("email_strict", function(value, element) {
+  return this.optional(element) || /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+}, "Please enter the correct email address.");
 
-  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) })
-    .then(response => {
-      if (!response.ok) {
-        // Если ответ от Telegram не успешный, "пробрасываем" ошибку
-        throw new Error(`Telegram API Error: ${response.status}`);
-      }
-      return response.json();
-    });
-}
-
-// 2. НОВАЯ "умная" функция с логикой повторных попыток
-function sendToTelegramWithRetries(message, retries = 3, delay = 1500) {
-  sendToTelegram(message)
-    .then(() => console.log('Telegram submission successful.')) // Успех, ничего больше не делаем
-    .catch(error => {
-      console.error(`Attempt failed. Retries left: ${retries - 1}. Error:`, error);
-      if (retries > 1) {
-        // Если попытки еще есть, ждем 1.5 секунды и пробуем снова
-        setTimeout(() => {
-          sendToTelegramWithRetries(message, retries - 1, delay);
-        }, delay);
-      } else {
-        console.error('Telegram submission failed after all retries.');
-      }
-    });
-}
-
-  // 2. Validation Rules
-  $.validator.addMethod("phoneUS_complete", function(value, element) {
-    return this.optional(element) || (element.imask && element.imask.masked.isComplete);
-  }, "Please enter a complete phone number.");
-  $.validator.addMethod("email_strict", function(value, element) {
-    return this.optional(element) || /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-  }, "Please enter the correct email address.");
-
-  // 3. Form Validation Initialization
-  $("#cta-form, #lp-target-form").validate({
-    rules: { fullname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email: true } },
-    messages: { email: { email: "Invalid email" } },
-    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("border-bottom", "1px solid var(--error)"); },
-    unhighlight: function(element) { $(element).css("border-bottom", "1px solid var(--white)"); },
-  });
-  $("#corp-cta-form").validate({
-    rules: { firstname: { required: true }, lastname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true }, 'project-type': { required: true } },
-    messages: { email: { email: "Invalid email" }, 'project-type': { required: "Please select a project type from the list to proceed." } },
-    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("background-color", "rgba(200, 15, 15, 0.06)").addClass("error-placeholder"); },
-    unhighlight: function(element) { $(element).css("background-color", "").removeClass("error-placeholder"); },
-  });
-  $("#new-cta-form").validate({
-    rules: { firstname: { required: true }, lastname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true }, 'project-type': { required: true } },
-    messages: { email: { email: "Invalid email" }, 'project-type': { required: "Please select a project type from the list to proceed." } },
-    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
-    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
-  });
-  $("#direct-form").validate({
-    rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true } },
-    messages: { email: { email: "Invalid email" } },
-    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
-    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
-  });
-  $("#price-form").validate({
-    rules: { 'p-name': { required: true }, 'p-phone': { required: true, phoneUS_complete: true }, 'p-email': { required: true, email_strict: true } },
-    messages: { 'p-email': { email: "Invalid email" } },
-    errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
-    highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
-    unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
-  });
-
-  // НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ
-$('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #price-form').on('submit', function(e) {
-  // Проверяем, прошла ли форма валидацию
-  if ($(this).valid()) {
-    const form = this;
-    const formData = new FormData(form);
-    let message = `<b>Новая заявка с формы "${form.dataset.name || form.id}"</b>\n\n`;
-    for (const [key, value] of formData.entries()) {
-      if (value) { message += `<b>${key}:</b> ${value}\n`; }
-    }
-    // Отправляем в Telegram, но не мешаем стандартной отправке
-    sendToTelegramWithRetries(message);
-  }
-  // Мы не используем e.preventDefault(), чтобы Webflow мог отправить форму дальше
+// 2. Form Validation Initialization
+// Применяем правила валидации ко всем вашим формам
+$("#cta-form, #lp-target-form").validate({
+  rules: { fullname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email: true } },
+  messages: { email: { email: "Invalid email" } },
+  errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+  highlight: function(element) { $(element).css("border-bottom", "1px solid var(--error)"); },
+  unhighlight: function(element) { $(element).css("border-bottom", "1px solid var(--white)"); },
+});
+$("#corp-cta-form, #new-cta-form").validate({
+  rules: { firstname: { required: true }, lastname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true }, 'project-type': { required: true } },
+  messages: { email: { email: "Invalid email" }, 'project-type': { required: "Please select a project type from the list to proceed." } },
+  errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+  highlight: function(element) { $(element).css("background-color", "rgba(200, 15, 15, 0.06)").addClass("error-placeholder"); },
+  unhighlight: function(element) { $(element).css("background-color", "").removeClass("error-placeholder"); },
+});
+$("#direct-form").validate({
+  rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true } },
+  messages: { email: { email: "Invalid email" } },
+  errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+  highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
+  unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
+});
+$("#price-form").validate({
+  rules: { 'p-name': { required: true }, 'p-phone': { required: true, phoneUS_complete: true }, 'p-email': { required: true, email_strict: true } },
+  messages: { 'p-email': { email: "Invalid email" } },
+  errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
+  highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
+  unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
 });
 
-  // 4. Phone Input Mask
-  const phoneInputs = document.querySelectorAll('input[name="phone"], input[name="p-phone"]');
-  if (phoneInputs.length > 0) {
-    const phoneMaskOptions = { mask: '+1 ({N}00) 000-0000', lazy: false, blocks: { N: { mask: IMask.MaskedRange, from: 2, to: 9 }, '0': { mask: IMask.MaskedRange, from: 0, to: 9 } } };
-    phoneInputs.forEach(function(inputElement) { inputElement.imask = IMask(inputElement, phoneMaskOptions); });
-  }
 
-  // 5. Custom Success Message
-  const customSuccessBlock = $('.custom-success');
-  if (customSuccessBlock.length > 0) {
-    const successWindow = customSuccessBlock.find('.success-window');
-    const closeButton = $('#success-close');
-    if (closeButton.length > 0) {
-      closeButton.on('click', function(e) {
-        e.preventDefault();
-        const visibleSuccessMessage = $('.w-form-done').filter(':visible');
-        const formBlock = visibleSuccessMessage.closest('.w-form');
-        const formElement = formBlock.find('form');
-        if (successWindow.length > 0) { successWindow.removeClass('is-visible'); }
-        setTimeout(function() {
-          customSuccessBlock.hide();
-          if (visibleSuccessMessage.length) { visibleSuccessMessage.hide(); }
-          if (formElement.length) { formElement.show(); formElement[0].reset(); }
-        }, 400);
-      });
-    }
-    $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form').each(function() {
-      const formElement = $(this);
-      const formBlock = formElement.closest('.w-form');
-      const nativeSuccessMessage = formBlock.find('.w-form-done');
-      
-      if (nativeSuccessMessage.length > 0) {
+// 3. Phone Input Mask
+const phoneInputs = document.querySelectorAll('input[name="phone"], input[name="p-phone"]');
+if (phoneInputs.length > 0) {
+  const phoneMaskOptions = { mask: '+1 ({N}00) 000-0000', lazy: false, blocks: { N: { mask: IMask.MaskedRange, from: 2, to: 9 }, '0': { mask: IMask.MaskedRange, from: 0, to: 9 } } };
+  phoneInputs.forEach(function(inputElement) {
+    inputElement.imask = IMask(inputElement, phoneMaskOptions);
+  });
+}
+
+// 4. Custom Success Message & Redirect Logic
+const customSuccessBlock = $('.custom-success');
+if (customSuccessBlock.length > 0) {
+  const successWindow = customSuccessBlock.find('.success-window');
+  const closeButton = $('#success-close');
+  if (closeButton.length > 0) {
+    closeButton.on('click', function(e) {
+      e.preventDefault();
+      const visibleSuccessMessage = $('.w-form-done').filter(':visible');
+      const formBlock = visibleSuccessMessage.closest('.w-form');
+      const formElement = formBlock.find('form');
+      if (successWindow.length > 0) { successWindow.removeClass('is-visible'); }
+      setTimeout(function() {
+        customSuccessBlock.hide();
+        if (visibleSuccessMessage.length) { visibleSuccessMessage.hide(); }
+        if (formElement.length) { formElement.show(); formElement[0].reset(); }
+      }, 400);
+    });
+  }
+  
+  // Вешаем наблюдатель на все формы
+  $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #price-form').each(function() {
+    const formElement = $(this);
+    const formBlock = formElement.closest('.w-form');
+    const nativeSuccessMessage = formBlock.find('.w-form-done');
+    
+    if (nativeSuccessMessage.length > 0) {
       const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
           if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
             const submittedFormId = formElement.attr('id');
             
-            // --- РАСШИРЕННАЯ ЛОГИКА ПЕРЕНАПРАВЛЕНИЯ ---
+            // Логика перенаправления или показа кастомного окна
             switch (submittedFormId) {
               case 'lp-target-form':
                 window.location.href = '/thank-you';
@@ -463,9 +411,9 @@ $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #pri
         });
       });
       observer.observe(nativeSuccessMessage[0], { attributes: true });
-      }
-    });
-  }
+    }
+  });
+}
 
   // 6. Zebra Clear Input
   new $.Zebra_ClearInput('input.input-field, input.corp-input-field');
