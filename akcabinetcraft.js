@@ -159,7 +159,7 @@ function initApp() {
 
   // 1. Navbar Inversion Logic
   if (nav || navCorp) {
-    const invertedNavPages = ['/portfolio', '/contact', '/blog', '/privacy-policy', '/posts', '/thank-you'];
+    const invertedNavPages = ['/portfolio', '/contact', '/blog', '/privacy-policy', '/posts', '/thank-you', '/quiz'];
     const currentPath = window.location.pathname;
     const triggerSelectors = ['.section-hero', '.project-temaplate-hero', '.hero-cms-template', '.shaker-hero'];
     const needsInversion = invertedNavPages.some(pagePrefix => currentPath.startsWith(pagePrefix));
