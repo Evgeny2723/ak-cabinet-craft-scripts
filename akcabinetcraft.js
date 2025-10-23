@@ -14,7 +14,7 @@ function initApp() {
     },
     breakpoints: {
       767: {
-        slidesPerView: 2.2,
+        slidesPerView: "auto",
         centeredSlides: true,
         spaceBetween: 16
       }
