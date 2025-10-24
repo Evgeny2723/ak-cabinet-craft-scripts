@@ -183,7 +183,7 @@ function initApp() {
               if (touchbarMobile) {
                 gsap.to(touchbarMobile, { 
                   yPercent: 0, 
-                  duration: 0.4, // Можете настроить скорость
+                  duration: 0.4,
                   ease: 'power2.out' 
                 });
               }
@@ -193,7 +193,7 @@ function initApp() {
               if (navCorp) navCorp.classList.remove('inverted-c');
               if (touchbarMobile) {
                 gsap.to(touchbarMobile, { 
-                  yPercent: 100, // Возвращаем обратно за экран
+                  yPercent: 100,
                   duration: 0.4, 
                   ease: 'power2.in' 
                 });
@@ -216,10 +216,24 @@ function initApp() {
           onEnter: () => {
             if (nav) nav.classList.add('navbar-hidden');
             if (navCorp) navCorp.classList.add('navbar-hidden');
+            if (touchbarMobile) {
+                gsap.to(touchbarMobile, { 
+                  yPercent: 100,
+                  duration: 0.4, 
+                  ease: 'power2.in' 
+                });
+              }
           },
           onLeaveBack: () => {
             if (nav) nav.classList.remove('navbar-hidden');
             if (navCorp) navCorp.classList.remove('navbar-hidden');
+            if (touchbarMobile) {
+                gsap.to(touchbarMobile, { 
+                  yPercent: 0, 
+                  duration: 0.4,
+                  ease: 'power2.out' 
+                });
+              }
           }
         });
       }
