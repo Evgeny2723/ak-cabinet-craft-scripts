@@ -156,6 +156,7 @@ function initApp() {
   // --- Navbar Logic ---
   const nav = document.querySelector('.navbar');
   const navCorp = document.querySelector('.navbar-corp');
+  const touchbarMobile = document.querySelector('.touchbar-mobile');
 
   // 1. Navbar Inversion Logic
   if (nav || navCorp) {
@@ -176,10 +177,24 @@ function initApp() {
             onEnter: () => {
               if (nav) nav.classList.add('inverted');
               if (navCorp) navCorp.classList.add('inverted-c');
+              if (touchbarMobile) {
+                gsap.to(touchbarMobile, { 
+                  yPercent: 0, 
+                  duration: 0.4, // Можете настроить скорость
+                  ease: 'power2.out' 
+                });
+              }
             },
             onLeaveBack: () => {
               if (nav) nav.classList.remove('inverted');
               if (navCorp) navCorp.classList.remove('inverted-c');
+              if (touchbarMobile) {
+                gsap.to(touchbarMobile, { 
+                  yPercent: 100, // Возвращаем обратно за экран
+                  duration: 0.4, 
+                  ease: 'power2.in' 
+                });
+              }
             }
           });
         }
