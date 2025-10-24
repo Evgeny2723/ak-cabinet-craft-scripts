@@ -168,6 +168,9 @@ function initApp() {
     if (needsInversion) {
       if (navCorp) navCorp.classList.add('inverted-c');
     } else {
+      if (touchbarMobile) {
+        gsap.set(touchbarMobile, { yPercent: 100 });
+      }
       triggerSelectors.forEach(selector => {
         const triggerElement = document.querySelector(selector);
         if (triggerElement) {
