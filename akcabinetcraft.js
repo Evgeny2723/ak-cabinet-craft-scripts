@@ -395,64 +395,28 @@ if (phoneInputs.length > 0) {
 }
 
 // 4. Custom Success Message & Redirect Logic
-const customSuccessBlock = $('.custom-success');
-if (customSuccessBlock.length > 0) {
-  const successWindow = customSuccessBlock.find('.success-window');
-  const closeButton = $('#success-close');
-  if (closeButton.length > 0) {
-    closeButton.on('click', function(e) {
-      e.preventDefault();
-      const visibleSuccessMessage = $('.w-form-done').filter(':visible');
-      const formBlock = visibleSuccessMessage.closest('.w-form');
-      const formElement = formBlock.find('form');
-      if (successWindow.length > 0) { successWindow.removeClass('is-visible'); }
-      setTimeout(function() {
-        customSuccessBlock.hide();
-        if (visibleSuccessMessage.length) { visibleSuccessMessage.hide(); }
-        if (formElement.length) { formElement.show(); formElement[0].reset(); }
-      }, 400);
-    });
-  }
+$('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #price-form').each(function() {
+  const formElement = $(this);
+  const formBlock = formElement.closest('.w-form');
+  const nativeSuccessMessage = formBlock.find('.w-form-done');
   
-  // Вешаем наблюдатель на все формы
-  $('#cta-form, #corp-cta-form, #new-cta-form, #lp-target-form, #direct-form, #price-form').each(function() {
-    const formElement = $(this);
-    const formBlock = formElement.closest('.w-form');
-    const nativeSuccessMessage = formBlock.find('.w-form-done');
-    
-    if (nativeSuccessMessage.length > 0) {
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
-            const submittedFormId = formElement.attr('id');
-            
-            // Логика перенаправления или показа кастомного окна
-            switch (submittedFormId) {
-              case 'lp-target-form':
-                window.location.href = '/thank-you';
-                break;
-              case 'direct-form':
-                window.location.href = '/thanks-page-shaker-phone';
-                break;
-              case 'price-form':
-                window.location.href = '/thanks-page-shaker-ff';
-                break;
-              default:
-                // Для всех остальных форм показываем кастомное окно
-                if (customSuccessBlock.length > 0) {
-                  customSuccessBlock.css('display', 'flex');
-                  setTimeout(function() { if (successWindow.length > 0) { successWindow.addClass('is-visible'); } }, 50);
-                }
-                break;
-            }
-            observer.disconnect();
-          }
-        });
+  if (nativeSuccessMessage.length > 0) {
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        // Если появилось стандартное сообщение Webflow об успехе
+        if (mutation.attributeName === "style" && nativeSuccessMessage.is(':visible')) {
+          
+          // --- ИЗМЕНЕННАЯ ЛОГИКА ---
+          // Немедленно перенаправляем на /thank-you
+          window.location.href = '/thank-you';
+          
+          observer.disconnect();
+        }
       });
-      observer.observe(nativeSuccessMessage[0], { attributes: true });
-    }
-  });
-}
+    });
+    observer.observe(nativeSuccessMessage[0], { attributes: true });
+  }
+});
 
   // 6. Zebra Clear Input
   new $.Zebra_ClearInput('input.input-field, input.corp-input-field');
