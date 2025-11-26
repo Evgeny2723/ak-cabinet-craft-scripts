@@ -366,14 +366,14 @@ $("#corp-cta-form").validate({
   unhighlight: function(element) { $(element).css("background-color", "").removeClass("error-placeholder"); },
 });
 $("#direct-form").validate({
-  rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true } },
+  rules: { name: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email_strict: true },  address: { required: true } },
   messages: { email: { email: "Invalid email" } },
   errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
   highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
   unhighlight: function(element) { $(element).css("border", "").removeClass("error-placeholder"); },
 });
 $("#price-form").validate({
-  rules: { 'p-name': { required: true }, 'p-phone': { required: true, phoneUS_complete: true }, 'p-email': { required: true, email_strict: true } },
+  rules: { 'p-name': { required: true }, 'p-phone': { required: true, phoneUS_complete: true },  'p-address': { required: true }, 'p-email': { required: true, email_strict: true } },
   messages: { 'p-email': { email: "Invalid email" } },
   errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
   highlight: function(element) { $(element).css("border", "1px solid var(--error)").addClass("error-placeholder"); },
