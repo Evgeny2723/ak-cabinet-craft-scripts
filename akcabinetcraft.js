@@ -345,7 +345,7 @@ $.validator.addMethod("email_strict", function(value, element) {
 // 2. Form Validation Initialization
 // Применяем правила валидации ко всем вашим формам
 $("#cta-form, #lp-target-form").validate({
-  rules: { fullname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email: true }, address: { required: true }, },
+  rules: { fullname: { required: true }, phone: { required: true, phoneUS_complete: true }, email: { required: true, email: true }, address: { required: true }, time: { required: true } },
   messages: { email: { email: "Invalid email" } },
   errorPlacement: function(error, element) { error.appendTo(element.closest(".input-wrapper")); },
   highlight: function(element) { $(element).css("border-bottom", "1px solid var(--error)"); },
