@@ -1,4 +1,4 @@
-console.log('Код обновлен в 21:27');
+console.log('Код обновлен в 21:48');
 function initApp() {
     var reviewsSwiper = new Swiper(".reviews-swiper", {
         slidesPerView: 1,
@@ -354,6 +354,7 @@ function initApp() {
         },
     });
     $("#new-cta-form").validate({
+        ignore: ':hidden:not([name="cf-turnstile-response"])',
         rules: {
             firstname: { required: !0 },
             lastname: { required: !0 },
@@ -369,9 +370,13 @@ function initApp() {
             "project-type": { required: "Please select a project type from the list to proceed." },
           "cf-turnstile-response": { required: "Please verify you're not a robot" }
         },
-        errorPlacement: function (error, element) {
+        errorPlacement: function(error, element) {
+        if (element.attr("name") === "cf-turnstile-response") {
+            error.appendTo(element.closest(".cf-turnstile").parent());
+        } else {
             error.appendTo(element.closest(".input-wrapper"));
-        },
+        }
+    },
         highlight: function (element) {
             $(element).css("background-color", "var(--white)").addClass("error-placeholder");
         },
@@ -417,15 +422,6 @@ function initApp() {
             $(element).css("border", "").removeClass("error-placeholder");
         },
     });
-  function onTurnstileExpired() {
-    var form = document.querySelector('.cf-turnstile').closest('form');
-    var tokenField = form.querySelector('input[name="turnstile-token"]');
-    if (tokenField) {
-        tokenField.value = '';
-        $(form).validate().element(tokenField);
-        console.log('Значение токена сброшено');// Перепроверить поле
-    }
-}
     const phoneInputs = document.querySelectorAll('input[name="phone"], input[name="p-phone"]');
     if (phoneInputs.length > 0) {
         const phoneMaskOptions = {
