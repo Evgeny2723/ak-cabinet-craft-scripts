@@ -1,4 +1,3 @@
-console.log('Код обновлен в 22:37');
 window.onTurnstileSuccess = function(token) {
     console.log('Turnstile verified');
     
@@ -346,8 +345,9 @@ function initApp() {
             email: { required: !0, email: !0 },
             address: { required: !0 },
             time: { required: !0 },
+            "cf-turnstile-response": { required: !0 }
         },
-        messages: { email: { email: "Invalid email" } },
+        messages: { email: { email: "Invalid email" }, "cf-turnstile-response": { required: "Please verify you're not a robot" } },
         errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
         },
@@ -367,10 +367,12 @@ function initApp() {
             address: { required: !0 },
             "project-type": { required: !0 },
             time: { required: !0 },
+            "cf-turnstile-response": { required: !0 }
         },
         messages: {
             email: { email: "Invalid email" },
             "project-type": { required: "Please select a project type from the list to proceed." },
+            "cf-turnstile-response": { required: "Please verify you're not a robot" }
         },
         errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
@@ -399,13 +401,9 @@ function initApp() {
             "project-type": { required: "Please select a project type from the list to proceed." },
           "cf-turnstile-response": { required: "Please verify you're not a robot" }
         },
-        errorPlacement: function(error, element) {
-        if (element.attr("name") === "cf-turnstile-response") {
-            error.appendTo(element.closest(".cf-turnstile").parent());
-        } else {
+        errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
-        }
-    },
+        },
         highlight: function (element) {
             $(element).css("background-color", "var(--white)").addClass("error-placeholder");
         },
@@ -420,8 +418,9 @@ function initApp() {
             email: { required: !0, email_strict: !0 },
             address: { required: !0 },
             time: { required: !0 },
+            "cf-turnstile-response": { required: !0 }
         },
-        messages: { email: { email: "Invalid email" } },
+        messages: { email: { email: "Invalid email" }, "cf-turnstile-response": { required: "Please verify you're not a robot" } },
         errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
         },
@@ -439,8 +438,9 @@ function initApp() {
             "p-address": { required: !0 },
             "p-email": { required: !0, email_strict: !0 },
             "p-time": { required: !0 },
+            "cf-turnstile-response": { required: !0 }
         },
-        messages: { "p-email": { email: "Invalid email" } },
+        messages: { "p-email": { email: "Invalid email" }, "cf-turnstile-response": { required: "Please verify you're not a robot" } },
         errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
         },
