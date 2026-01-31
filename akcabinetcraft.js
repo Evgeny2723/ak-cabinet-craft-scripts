@@ -1,3 +1,4 @@
+console.log('Код обновлен в 20:40');
 function initApp() {
     var reviewsSwiper = new Swiper(".reviews-swiper", {
         slidesPerView: 1,
