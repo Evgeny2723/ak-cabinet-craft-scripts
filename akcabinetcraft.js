@@ -1,12 +1,25 @@
-console.log('Код обновлен в 22:05');
+console.log('Код обновлен в 22:15');
+// Глобальный callback для Turnstile
 window.onTurnstileSuccess = function(token) {
     console.log('Turnstile verified');
-    // Триггерим перевалидацию поля во всех формах
+    
+    // Перевалидация для jQuery Validate - убирает ошибку
     $('input[name="cf-turnstile-response"]').each(function() {
-        var $form = $(this).closest('form');
-        var validator = $form.data('validator');
+        var validator = $(this).closest('form').data('validator');
         if (validator) {
-            validator.element(this); // Перепроверить это поле
+            validator.element(this);
+        }
+    });
+};
+
+window.onTurnstileExpired = function() {
+    console.log('Turnstile expired');
+    
+    // Триггерим ошибку валидации
+    $('input[name="cf-turnstile-response"]').each(function() {
+        var validator = $(this).closest('form').data('validator');
+        if (validator) {
+            validator.element(this);
         }
     });
 };
