@@ -1,9 +1,11 @@
-console.log('Код обновлен в 22:15');
-// Глобальный callback для Turnstile
+console.log('Код обновлен в 22:37');
 window.onTurnstileSuccess = function(token) {
     console.log('Turnstile verified');
     
-    // Перевалидация для jQuery Validate - убирает ошибку
+    // Копируем токен в нативное Webflow поле
+    $('input[name="turnstile-token"]').val(token);
+    
+    // Перевалидация - убирает ошибку
     $('input[name="cf-turnstile-response"]').each(function() {
         var validator = $(this).closest('form').data('validator');
         if (validator) {
@@ -15,7 +17,10 @@ window.onTurnstileSuccess = function(token) {
 window.onTurnstileExpired = function() {
     console.log('Turnstile expired');
     
-    // Триггерим ошибку валидации
+    // Очищаем токен
+    $('input[name="turnstile-token"]').val('');
+    
+    // Триггерим ошибку
     $('input[name="cf-turnstile-response"]').each(function() {
         var validator = $(this).closest('form').data('validator');
         if (validator) {
