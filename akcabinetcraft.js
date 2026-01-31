@@ -1,4 +1,15 @@
-console.log('Код обновлен в 21:48');
+console.log('Код обновлен в 22:05');
+window.onTurnstileSuccess = function(token) {
+    console.log('Turnstile verified');
+    // Триггерим перевалидацию поля во всех формах
+    $('input[name="cf-turnstile-response"]').each(function() {
+        var $form = $(this).closest('form');
+        var validator = $form.data('validator');
+        if (validator) {
+            validator.element(this); // Перепроверить это поле
+        }
+    });
+};
 function initApp() {
     var reviewsSwiper = new Swiper(".reviews-swiper", {
         slidesPerView: 1,
