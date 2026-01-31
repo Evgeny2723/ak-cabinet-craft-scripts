@@ -1,4 +1,4 @@
-console.log('Код обновлен в 20:40');
+console.log('Код обновлен в 21:27');
 function initApp() {
     var reviewsSwiper = new Swiper(".reviews-swiper", {
         slidesPerView: 1,
@@ -309,12 +309,7 @@ function initApp() {
         },
         "Please enter the correct email address."
     );
-$.validator.addMethod("turnstileRequired", function(value, element) {
-    // Ищем токен в той же форме
-    var form = $(element).closest('form');
-    var tokenField = form.find('input[name="turnstile-token"]');
-    return tokenField.length && tokenField.val().length > 0;
-}, "Please complete the captcha verification");
+    
     $("#cta-form, #lp-target-form").validate({
         rules: {
             fullname: { required: !0 },
@@ -322,16 +317,11 @@ $.validator.addMethod("turnstileRequired", function(value, element) {
             email: { required: !0, email: !0 },
             address: { required: !0 },
             time: { required: !0 },
-          "turnstile-token": { turnstileRequired: true }
         },
-        messages: { email: { email: "Invalid email" }, "turnstile-token": { turnstileRequired: "Please verify you're not a robot" } },
-        errorPlacement: function(error, element) {
-        if (element.attr("name") === "turnstile-token") {
-            error.appendTo(element.closest("form").find(".cf-turnstile").parent());
-        } else {
+        messages: { email: { email: "Invalid email" } },
+        errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
-        }
-    },
+        },
         highlight: function (element) {
             $(element).css("border-bottom", "1px solid var(--error)");
         },
@@ -372,20 +362,16 @@ $.validator.addMethod("turnstileRequired", function(value, element) {
             address: { required: !0 },
             "project-type": { required: !0 },
             time: { required: !0 },
-          "turnstile-token": { turnstileRequired: true }
+          "cf-turnstile-response": { required: !0 }
         },
         messages: {
             email: { email: "Invalid email" },
             "project-type": { required: "Please select a project type from the list to proceed." },
-          "turnstile-token": { turnstileRequired: "Please verify you're not a robot" }
+          "cf-turnstile-response": { required: "Please verify you're not a robot" }
         },
-        errorPlacement: function(error, element) {
-        if (element.attr("name") === "turnstile-token") {
-            error.appendTo(element.closest("form").find(".cf-turnstile").parent());
-        } else {
+        errorPlacement: function (error, element) {
             error.appendTo(element.closest(".input-wrapper"));
-        }
-    },
+        },
         highlight: function (element) {
             $(element).css("background-color", "var(--white)").addClass("error-placeholder");
         },
