@@ -435,7 +435,8 @@ $.validator.addMethod("turnstileRequired", function(value, element) {
     var tokenField = form.querySelector('input[name="turnstile-token"]');
     if (tokenField) {
         tokenField.value = '';
-        $(form).validate().element(tokenField); // Перепроверить поле
+        $(form).validate().element(tokenField);
+        console.log('Значение токена сброшено');// Перепроверить поле
     }
 }
     const phoneInputs = document.querySelectorAll('input[name="phone"], input[name="p-phone"]');
