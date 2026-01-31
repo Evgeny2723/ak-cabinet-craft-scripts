@@ -339,6 +339,7 @@ function initApp() {
     );
     
     $("#cta-form, #lp-target-form").validate({
+        ignore: ':hidden:not([name="cf-turnstile-response"])',
         rules: {
             fullname: { required: !0 },
             phone: { required: !0, phoneUS_complete: !0 },
@@ -359,6 +360,7 @@ function initApp() {
         },
     });
     $("#corp-cta-form").validate({
+        ignore: ':hidden:not([name="cf-turnstile-response"])',
         rules: {
             firstname: { required: !0 },
             lastname: { required: !0 },
@@ -412,6 +414,7 @@ function initApp() {
         },
     });
     $("#direct-form").validate({
+        ignore: ':hidden:not([name="cf-turnstile-response"])',
         rules: {
             name: { required: !0 },
             phone: { required: !0, phoneUS_complete: !0 },
@@ -432,6 +435,7 @@ function initApp() {
         },
     });
     $("#price-form").validate({
+        ignore: ':hidden:not([name="cf-turnstile-response"])',
         rules: {
             "p-name": { required: !0 },
             "p-phone": { required: !0, phoneUS_complete: !0 },
